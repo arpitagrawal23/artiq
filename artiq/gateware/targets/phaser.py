@@ -3,6 +3,7 @@
 import argparse
 
 from migen import *
+from migen.build.generic_platform import *
 from migen.genlib.resetsync import AsyncResetSynchronizer
 from migen.genlib.cdc import MultiReg
 
@@ -23,6 +24,7 @@ from misoc.integration.builder import builder_args, builder_argdict
 from artiq.gateware.amp import AMPSoC, build_artiq_soc
 from artiq.gateware import rtio
 from artiq.gateware.ad9154_fmc_ebz import ad9154_fmc_ebz
+from artiq.gateware.fmc_adapter_io import fmc_adapter_io
 from artiq.gateware.rtio.phy import (ttl_simple, ttl_serdes_7series,
                                      sawg)
 from artiq import __version__ as artiq_version
@@ -73,6 +75,13 @@ class _PhaserCRG(Module, AutoCSR):
         self.cd_rtio.clk.attr.add("keep")
         platform.add_period_constraint(self.cd_rtio.clk, 20/3)
 
+_ttl_sma_diff = [
+    ("ttl_sma_diff", 0,
+     Subsignal("p", Pins("Y23")),
+     Subsignal("n", Pins("Y24")),
+     IOStandard("LVDS_25"), Misc("DIFF_TERM=TRUE")
+     )
+]
 
 class AD9154JESD(Module, AutoCSR):
     def __init__(self, platform):
@@ -177,6 +186,8 @@ class Phaser(MiniSoC, AMPSoC):
 
         platform = self.platform
         platform.add_extension(ad9154_fmc_ebz)
+        platform.add_extension(fmc_adapter_io)
+        platform.add_extension(_ttl_sma_diff)
 
         self.submodules.leds = gpio.GPIOOut(Cat(
             platform.request("user_led", 0),
@@ -201,14 +212,29 @@ class Phaser(MiniSoC, AMPSoC):
 
         rtio_channels = []
 
-        phy = ttl_serdes_7series.InOut_8X(
-            platform.request("user_sma_gpio_n"))
-        self.submodules += phy
-        rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=128))
-
-        phy = ttl_simple.Output(platform.request("user_led", 2))
+        # FMC-LPC to VHDCI - Configuration pins for SN74LV595APWT
+        pads = platform.request("lpc_config", 0)
+        phy = ttl_simple.Output(pads.latch)
         self.submodules += phy
         rtio_channels.append(rtio.Channel.from_phy(phy))
+        phy = ttl_simple.Output(pads.clk)
+        self.submodules += phy
+        rtio_channels.append(rtio.Channel.from_phy(phy))
+        phy = ttl_simple.Output(pads.ser)
+        self.submodules += phy
+        rtio_channels.append(rtio.Channel.from_phy(phy))
+        # FMC-LPC to VHDCI - EEMs
+        for i in range(4):
+            for j in range(8):
+                pads = platform.request("lpc_eem" + str(i), j)
+                phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+                self.submodules += phy
+                rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+
+        pads = platform.request("ttl_sma_diff")
+        phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+        self.submodules += phy
+        rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=128))
 
         sysref_pads = platform.request("ad9154_sysref")
         phy = ttl_serdes_7series.Input_8X(sysref_pads.p, sysref_pads.n)
