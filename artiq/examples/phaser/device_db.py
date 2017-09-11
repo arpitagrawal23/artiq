@@ -22,19 +22,19 @@ device_db = {
         "module": "artiq.coredevice.cache",
         "class": "CoreCache"
     },
-    "lpc_latch": {
+    "lpc_config_latch": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
         "arguments": {"channel": lpc_start + 0}
     },
-    "lpc_clk": {
+    "lpc_config_clk": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
         "arguments": {"channel": lpc_start + 1}
     },
-    "lpc_ser": {
+    "lpc_config_ser": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
@@ -234,7 +234,7 @@ device_db = {
     },
     # support for FMC HPC AD9154 prototype board (4 channel SAWG)
     # using ARTIQ phaser demo
-    "lpc_vhdci_i2c": {
+    "lpc_i2c": {
         "type": "local",
         "module": "artiq.coredevice.i2c",
         "class": "TCA9548A",

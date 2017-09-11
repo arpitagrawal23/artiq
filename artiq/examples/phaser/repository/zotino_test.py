@@ -1,32 +1,43 @@
 from artiq.experiment import *
 
 class ZotinoTest(EnvExperiment):
-    """ZotinoTest
-    KC705-> FMC-VHDCI adapter -> VHDCI cable -> VHDCI carrier -> IDC cable-> 3U BNC
-    """
     def build(self):
         print(self.__doc__)
         self.setattr_device("core")
-        self.setattr_device("ttl_sma_diff")
         self.setattr_device("lpc_eem0_0")
         self.setattr_device("lpc_eem0_1")
-        self.setattr_device("lpc_eem0_2")
-        self.setattr_device("lpc_eem0_3")
         self.setattr_device("lpc_eem0_4")
-        self.setattr_device("scheduler")
+
+    @kernel
+    def SN74LV595A_putData(self, srclk, rclk, ser, data):
+        dt = 1*ms;
+        srclk.off()
+        rclk.off()
+        delay(dt)
+        for i in range(8):
+            if data & 1 == 0:
+                ser.off()
+            else:
+                ser.on()
+            srclk.off()
+            delay(dt)
+            srclk.on()
+            delay(dt)
+            data = data >> 1
+        srclk.off()
+        rclk.off()
+        delay(dt)
+        rclk.on()
+        delay(dt)
+        rclk.off()
 
 
     @kernel
     def run(self):
         self.core.reset()
-        delay(1 * ms)
+        delay(1*ms)
         while True:
-            self.ttl_sma_diff.pulse(1*us)
-            self.lpc_eem0_0.pulse(1*us)
-            self.lpc_eem0_1.pulse(1*us)
-            self.lpc_eem0_2.pulse(1*us)
-            self.lpc_eem0_3.pulse(1*us)
-            self.lpc_eem0_4.pulse(1*us)
-            delay(100*ms)
-
-
+            self.SN74LV595A_putData(self.lpc_eem0_0, self.lpc_eem0_4, self.lpc_eem0_1, 0xAA)
+            delay(500*ms)
+            self.SN74LV595A_putData(self.lpc_eem0_0, self.lpc_eem0_4, self.lpc_eem0_1, 0x55)
+            delay(500*ms)
