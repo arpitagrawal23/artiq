@@ -1,6 +1,6 @@
 from artiq.experiment import *
 
-class ZotinoTest(EnvExperiment):
+class ZotinoTestLED(EnvExperiment):
     def build(self):
         print(self.__doc__)
         self.setattr_device("core")

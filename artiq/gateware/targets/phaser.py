@@ -24,9 +24,9 @@ from misoc.integration.builder import builder_args, builder_argdict
 from artiq.gateware.amp import AMPSoC, build_artiq_soc
 from artiq.gateware import rtio
 from artiq.gateware.ad9154_fmc_ebz import ad9154_fmc_ebz
-from artiq.gateware.fmc_adapter_io import fmc_adapter_io
+from artiq.gateware.zotino_on_fmc import zotino_on_fmc
 from artiq.gateware.rtio.phy import (ttl_simple, ttl_serdes_7series,
-                                     sawg)
+                                     sawg, spi)
 from artiq import __version__ as artiq_version
 
 
@@ -186,7 +186,7 @@ class Phaser(MiniSoC, AMPSoC):
 
         platform = self.platform
         platform.add_extension(ad9154_fmc_ebz)
-        platform.add_extension(fmc_adapter_io)
+        platform.add_extension(zotino_on_fmc)
         platform.add_extension(_ttl_sma_diff)
 
         self.submodules.leds = gpio.GPIOOut(Cat(
@@ -212,24 +212,28 @@ class Phaser(MiniSoC, AMPSoC):
 
         rtio_channels = []
 
-        # FMC-LPC to VHDCI - Configuration pins for SN74LV595APWT
-        pads = platform.request("lpc_config", 0)
-        phy = ttl_simple.Output(pads.latch)
+        # pads = platform.request("zotino_led_srclk")
+        # phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+        # self.submodules += phy
+        # rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+        # pads = platform.request("zotino_led_rclk")
+        # phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+        # self.submodules += phy
+        # rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+        # pads = platform.request("zotino_led_ser")
+        # phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+        # self.submodules += phy
+        # rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+
+        pads = platform.request("zotino_ldac")
+        phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
         self.submodules += phy
-        rtio_channels.append(rtio.Channel.from_phy(phy))
-        phy = ttl_simple.Output(pads.clk)
+        rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+
+        phy = spi.SPIMaster(self.platform.request("zotino_spi", 0), differential=True)
         self.submodules += phy
-        rtio_channels.append(rtio.Channel.from_phy(phy))
-        phy = ttl_simple.Output(pads.ser)
-        self.submodules += phy
-        rtio_channels.append(rtio.Channel.from_phy(phy))
-        # FMC-LPC to VHDCI - EEMs
-        for i in range(4):
-            for j in range(8):
-                pads = platform.request("lpc_eem" + str(i), j)
-                phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
-                self.submodules += phy
-                rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
+        rtio_channels.append(rtio.Channel.from_phy(
+            phy, ofifo_depth=128, ififo_depth=128))
 
         pads = platform.request("ttl_sma_diff")
         phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)

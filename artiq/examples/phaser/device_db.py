@@ -1,8 +1,8 @@
 # The RTIO channel numbers here are for Phaser on KC705.
 
 core_addr = "192.168.1.71"
-lpc_start = 0
-sawgstart = lpc_start + 36
+zotino_start = -3
+sawgstart = zotino_start + 6
 
 device_db = {
     "core": {
@@ -22,229 +22,47 @@ device_db = {
         "module": "artiq.coredevice.cache",
         "class": "CoreCache"
     },
-    "lpc_config_latch": {
+    # "zotino_led_srclk": {
+    #     "type": "local",
+    #     "module": "artiq.coredevice.ttl",
+    #     "class": "TTLOut",
+    #     "arguments": {"channel": zotino_start + 0}
+    # },
+    # "zotino_led_rclk": {
+    #     "type": "local",
+    #     "module": "artiq.coredevice.ttl",
+    #     "class": "TTLOut",
+    #     "arguments": {"channel": zotino_start + 1}
+    # },
+    # "zotino_led_ser": {
+    #     "type": "local",
+    #     "module": "artiq.coredevice.ttl",
+    #     "class": "TTLOut",
+    #     "arguments": {"channel": zotino_start + 2}
+    # },
+    "zotino_ldac": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 0}
+        "arguments": {"channel": zotino_start + 3}
     },
-    "lpc_config_clk": {
+    "zotino_spi": {
         "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 1}
+        "module": "artiq.coredevice.spi",
+        "class": "SPIMaster",
+        "arguments": {"channel": zotino_start + 4}
     },
-    "lpc_config_ser": {
+    "zotino_dac": {
         "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 2}
-    },
-    "lpc_eem0_0": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 3}
-    },
-    "lpc_eem0_1": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 4}
-    },
-    "lpc_eem0_2": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 5}
-    },
-    "lpc_eem0_3": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 6}
-    },
-    "lpc_eem0_4": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 7}
-    },
-    "lpc_eem0_5": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 8}
-    },
-    "lpc_eem0_6": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 9}
-    },
-    "lpc_eem0_7": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 10}
-    },
-    "lpc_eem1_0": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 11}
-    },
-    "lpc_eem1_1": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 12}
-    },
-    "lpc_eem1_2": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 13}
-    },
-    "lpc_eem1_3": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 14}
-    },
-    "lpc_eem1_4": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 15}
-    },
-    "lpc_eem1_5": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 16}
-    },
-    "lpc_eem1_6": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 17}
-    },
-    "lpc_eem1_7": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 18}
-    },
-    "lpc_eem2_0": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 19}
-    },
-    "lpc_eem2_1": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 20}
-    },
-    "lpc_eem2_2": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 21}
-    },
-    "lpc_eem2_3": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 22}
-    },
-    "lpc_eem2_4": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 23}
-    },
-    "lpc_eem2_5": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 24}
-    },
-    "lpc_eem2_6": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 25}
-    },
-    "lpc_eem2_7": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 26}
-    },
-    "lpc_eem3_0": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 27}
-    },
-    "lpc_eem3_1": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 28}
-    },
-    "lpc_eem3_2": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 29}
-    },
-    "lpc_eem3_3": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 30}
-    },
-    "lpc_eem3_4": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 31}
-    },
-    "lpc_eem3_5": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 32}
-    },
-    "lpc_eem3_6": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 33}
-    },
-    "lpc_eem3_7": {
-        "type": "local",
-        "module": "artiq.coredevice.ttl",
-        "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 34}
-    },
-    # support for FMC HPC AD9154 prototype board (4 channel SAWG)
-    # using ARTIQ phaser demo
-    "lpc_i2c": {
-        "type": "local",
-        "module": "artiq.coredevice.i2c",
-        "class": "TCA9548A",
-        "arguments": {"address": 0x44}
+        "module": "artiq.coredevice.ad5360",
+        "class": "AD5360",
+        "arguments": {"spi_device": "zotino_spi", "ldac_device": "zotino_ldac"}
     },
     "ttl_sma_diff": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
-        "arguments": {"channel": lpc_start + 35}
+        "arguments": {"channel": zotino_start + 5}
     },
     "sysref": {
         "type": "local",
