@@ -58,11 +58,17 @@ device_db = {
         "class": "AD5360",
         "arguments": {"spi_device": "zotino_spi", "ldac_device": "zotino_ldac"}
     },
-    "ttl_sma_diff": {
+    "diff1": {
         "type": "local",
         "module": "artiq.coredevice.ttl",
         "class": "TTLOut",
         "arguments": {"channel": zotino_start + 5}
+    },
+    "diff2": {
+        "type": "local",
+        "module": "artiq.coredevice.ttl",
+        "class": "TTLOut",
+        "arguments": {"channel": zotino_start + 6}
     },
     "sysref": {
         "type": "local",

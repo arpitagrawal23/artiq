@@ -10,7 +10,7 @@ class DifferentialTristate(TSTriple):
     # HACK : This only works for single-bit signals
     def get_tristate(self, pad, pad_n):
         return Instance("IOBUFDS",
-                        i_I=self.i, o_O=self.o, i_T=self.oe,
+                        i_I=self.o, o_O=self.i, i_T=~self.oe,
                         io_IO=pad, io_IOB=pad_n)
 
 

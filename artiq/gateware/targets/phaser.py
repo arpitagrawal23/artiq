@@ -75,10 +75,17 @@ class _PhaserCRG(Module, AutoCSR):
         self.cd_rtio.clk.attr.add("keep")
         platform.add_period_constraint(self.cd_rtio.clk, 20/3)
 
-_ttl_sma_diff = [
-    ("ttl_sma_diff", 0,
+_diff1 = [
+    ("diff1", 0,
      Subsignal("p", Pins("Y23")),
      Subsignal("n", Pins("Y24")),
+     IOStandard("LVDS_25"), Misc("DIFF_TERM=TRUE")
+     )
+]
+_diff2 = [
+    ("diff2", 0,
+     Subsignal("p", Pins("LPC:LA06_P")),
+     Subsignal("n", Pins("LPC:LA06_N")),
      IOStandard("LVDS_25"), Misc("DIFF_TERM=TRUE")
      )
 ]
@@ -187,7 +194,8 @@ class Phaser(MiniSoC, AMPSoC):
         platform = self.platform
         platform.add_extension(ad9154_fmc_ebz)
         platform.add_extension(zotino_on_fmc)
-        platform.add_extension(_ttl_sma_diff)
+        platform.add_extension(_diff1)
+        platform.add_extension(_diff2)
 
         self.submodules.leds = gpio.GPIOOut(Cat(
             platform.request("user_led", 0),
@@ -230,12 +238,17 @@ class Phaser(MiniSoC, AMPSoC):
         self.submodules += phy
         rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=64))
 
-        phy = spi.SPIMaster(self.platform.request("zotino_spi", 0), differential=True)
+        phy = spi.SPIMaster(self.platform.request("zotino_spi"), differential=True)
         self.submodules += phy
         rtio_channels.append(rtio.Channel.from_phy(
             phy, ofifo_depth=128, ififo_depth=128))
 
-        pads = platform.request("ttl_sma_diff")
+        pads = platform.request("diff1")
+        phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
+        self.submodules += phy
+        rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=128))
+
+        pads = platform.request("diff2")
         phy = ttl_serdes_7series.Output_8X(pads.p, pads.n)
         self.submodules += phy
         rtio_channels.append(rtio.Channel.from_phy(phy, ififo_depth=128))
