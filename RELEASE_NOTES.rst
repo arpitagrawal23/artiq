@@ -3,8 +3,14 @@
 Release notes
 =============
 
-3.0 (unreleased)
-----------------
+4.0
+---
+
+No further notes.
+
+
+3.0
+---
 
 * The --embed option of applets is replaced with the environment variable
   ``ARTIQ_APPLET_EMBED``. The GUI sets this enviroment variable itself and the
@@ -54,6 +60,7 @@ Release notes
 * The master now rotates log files at midnight, rather than based on log size.
 * The results keys start_time and run_time are now stored as doubles of UNIX time,
   rather than ints. The file names are still based on local time.
+* Packages are no longer available for 32-bit Windows.
 
 
 2.4
